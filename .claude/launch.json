@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd /home/boris/lead-crm && npm run dev"],
+      "port": 3000
+    }
+  ]
+}
