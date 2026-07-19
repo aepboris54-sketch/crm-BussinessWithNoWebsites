@@ -83,7 +83,23 @@ from `includeWebResults`:
    access themselves (logged-in search surfaces things anonymous tools can't),
    they may be able to check faster than any scraper can.
 
-2. **Read the page's listed website** with the Apify actor
+2. **Check booking-platform directories directly — don't rely on keyword search
+   for this.** WebFetch gets blocked by studio24.bg (403, anti-bot), but
+   `mcp__Apify__apify--rag-web-browser` (a full browser under the hood) reads it
+   fine. Better still, don't search by business name at all — fetch the
+   platform's own per-neighborhood directory listing page and read every name on
+   it yourself:
+   `https://studio24.bg/en/beauty-salons-in-<neighborhood-slug>-sofia-k<id>`
+   (grab the exact slug/id from the neighborhood picker on any studio24 page —
+   they're not guessable). One fetch covers every candidate in that
+   neighborhood at once, which is usually several of them, and it's a direct
+   factual read of the real listing instead of a hope that Google indexed the
+   right page. This is far more reliable than a name-based `WebSearch`, which
+   keeps surfacing same-named businesses in other cities (there are multiple
+   "Шармант," "Avangard," and "Cveti"-named salons across Bulgaria — a generic
+   search can't tell them apart, a neighborhood directory listing can).
+
+3. **Read the Facebook page's listed website** with the Apify actor
    `apify/facebook-page-contact-information` (official Apify actor, well-rated,
    cheap — roughly $0.013/result). Input is exactly:
    ```json
@@ -93,10 +109,17 @@ from `includeWebResults`:
    takes multiple URLs, and one run for five candidates costs the same as one run
    for one candidate plus the flat per-run charge, so batching is strictly cheaper.
 
-3. **Apply the result**:
-   - `WebSearch` found nothing → qualifies, but label it on the shortlist as
-     "no Facebook found (unconfirmed)" rather than a clean "no website" — the
-     search missing it isn't the same as it not existing.
+4. **Apply the result**:
+   - Not found on the neighborhood directory AND `WebSearch` found nothing →
+     qualifies, but label it on the shortlist as "no Facebook/platform presence
+     found (unconfirmed)" rather than a clean "no website" — not finding it isn't
+     the same as it not existing, especially for Facebook specifically (Google
+     doesn't index Facebook's own content well; if the user has Facebook access
+     themselves, their logged-in search sees things anonymous tools can't).
+   - Found on a booking-platform directory (studio24, Notino, Booksy, Fresha,
+     Treatwell, or similar) → **drop this lead**. Same disqualifying reasoning as
+     the "website listed on Facebook" case below — jump straight there instead
+     of also running the Facebook check for this candidate.
    - Facebook page found, no website listed → qualifies. Clean "no website" lead.
    - Facebook page found, only a `*.business.site` link listed → **still
      qualifies**, don't bother fetching it. This is Google's old auto-generated
