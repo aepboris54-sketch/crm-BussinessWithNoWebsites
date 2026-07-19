@@ -92,27 +92,31 @@ from `includeWebResults`:
      "no Facebook found (unconfirmed)" rather than a clean "no website" — the
      search missing it isn't the same as it not existing.
    - Facebook page found, no website listed → qualifies. Clean "no website" lead.
-   - Facebook page found, website listed, but it's not really a website the
-     business built — → **still qualifies**, don't even bother fetching it to
-     check liveness. The test: did the business author this page's content, or
-     are they just a listing on someone else's platform? Both count as "not a
-     website": `*.business.site` (Google's old auto-generated Business Profile
-     mini-site — Google discontinued this in 2024, so most of these now 404
-     anyway), a Linktree/social-bio link, any social host, or a third-party
-     marketplace/booking-platform redirect (Notino, Booksy, Fresha, Treatwell,
-     and similar — these are directory listings the business didn't build, not
-     their own site, even though the actor reports them in the `website` field).
-     While you're in there, also check the actor's `websites` array — it
-     sometimes includes an Instagram profile even when no real website exists;
-     grab that for `instagram_url` on insert, it's free extra contact data.
-   - Facebook page found, a real (non-placeholder) website listed → fetch that URL
-     with native `WebFetch` (free) to see if it's actually alive:
+   - Facebook page found, only a `*.business.site` link listed → **still
+     qualifies**, don't bother fetching it. This is Google's old auto-generated
+     Business Profile mini-site (discontinued in 2024, most now 404 anyway) — the
+     owner never touched it, it takes zero effort to have one, and it proves
+     nothing about their actual digital presence.
+   - Facebook page found, a booking/marketplace platform listed — studio24,
+     Notino, Booksy, Fresha, Treatwell, or similar — → **drop this lead**, same as
+     a real website, don't bother checking liveness. Unlike the business.site
+     case, this one took real ongoing effort: the owner signed up, uploaded
+     photos and a price list, and keeps a bookable profile current. That's
+     functionally the digital presence we'd be pitching, just hosted on someone
+     else's platform instead of their own domain — not worth pursuing.
+   - Facebook page found, a real custom website listed → fetch that URL with
+     native `WebFetch` (free) to see if it's actually alive:
      - Loads and looks like a real, current site → **drop this lead entirely**, it
        doesn't belong on the shortlist. They already have what we'd be pitching.
      - Dead, parked, times out, or obviously abandoned → **keep it**, but label it
        differently on the shortlist ("has an old/broken site") rather than "no
        site" — it's a different pitch (rebuild vs. build-from-scratch), and the
        user should know which one they're looking at.
+
+While you're reading the Facebook page's data either way, also check the actor's
+`websites` array for an Instagram profile — it sometimes lists one even when no
+real website exists. Grab that for `instagram_url` on insert; it's free extra
+contact data and doesn't change the qualification call above.
 
 Whenever a Facebook page turns up for a lead, record its URL in `facebook_url` at
 insert time regardless of how the website check came out — it's a live contact
