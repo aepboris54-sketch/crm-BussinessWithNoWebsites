@@ -79,8 +79,14 @@ from `includeWebResults`:
    - No Facebook page found at all → qualifies. Genuinely no web presence found
      anywhere.
    - Facebook page found, no website listed → qualifies. Clean "no website" lead.
-   - Facebook page found, website listed → fetch that URL with native `WebFetch`
-     (free) to see if it's actually alive:
+   - Facebook page found, website listed, but the URL is itself a placeholder —
+     `*.business.site` (Google's old auto-generated Business Profile mini-site;
+     Google discontinued this service in 2024, so most of these now 404 anyway),
+     a Linktree/social-bio link, or another social host — → **still qualifies**.
+     Nobody built this; it doesn't count as a website, don't even bother fetching
+     it to check liveness.
+   - Facebook page found, a real (non-placeholder) website listed → fetch that URL
+     with native `WebFetch` (free) to see if it's actually alive:
      - Loads and looks like a real, current site → **drop this lead entirely**, it
        doesn't belong on the shortlist. They already have what we'd be pitching.
      - Dead, parked, times out, or obviously abandoned → **keep it**, but label it
