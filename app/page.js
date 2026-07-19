@@ -368,7 +368,83 @@ export default function Dashboard() {
               No leads found. Create your first lead!
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+              <div className="md:hidden divide-y divide-gray-200">
+                {filteredLeads.map((lead) => (
+                  <div key={lead.id} className="p-4">
+                    <div className="flex justify-between items-start gap-2 mb-2">
+                      <h3 className="font-medium text-gray-900">{lead.company_name}</h3>
+                      <button
+                        onClick={() => handleDeleteLead(lead.id, lead.company_name)}
+                        className="text-red-500 hover:text-red-700 shrink-0"
+                        title="Delete lead"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+
+                    <p className="text-sm text-gray-500 mb-2">
+                      {[lead.industry, lead.location].filter(Boolean).join(' • ') || '-'}
+                    </p>
+
+                    <div className="flex flex-col gap-1 mb-3 text-sm text-gray-600">
+                      {lead.email && (
+                        <div className="flex items-center gap-2">
+                          <Mail size={16} className="text-blue-600" />
+                          <span>{lead.email}</span>
+                        </div>
+                      )}
+                      {lead.phone && (
+                        <div className="flex items-center gap-2">
+                          <Phone size={16} className="text-green-600" />
+                          <span>{lead.phone}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex gap-3">
+                        {lead.website_url && (
+                          <a href={lead.website_url} target="_blank" rel="noopener noreferrer" className="text-gray-600" title="Website">
+                            <Globe size={18} />
+                          </a>
+                        )}
+                        {lead.facebook_url && (
+                          <a href={lead.facebook_url} target="_blank" rel="noopener noreferrer" className="text-blue-600" title="Facebook">
+                            <Facebook size={18} />
+                          </a>
+                        )}
+                        {lead.linkedin_url && (
+                          <a href={lead.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-blue-700" title="LinkedIn">
+                            <Linkedin size={18} />
+                          </a>
+                        )}
+                        {lead.instagram_url && (
+                          <a href={lead.instagram_url} target="_blank" rel="noopener noreferrer" className="text-pink-600" title="Instagram">
+                            <Instagram size={18} />
+                          </a>
+                        )}
+                      </div>
+
+                      <select
+                        value={lead.status}
+                        onChange={(e) => handleStatusChange(lead.id, e.target.value)}
+                        className={`px-3 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${STATUS_COLORS[lead.status]}`}
+                      >
+                        {STATUS_OPTIONS.map((status) => (
+                          <option key={status} value={status}>{status}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <p className="text-xs text-gray-400 mt-2">
+                      {new Date(lead.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-100 border-b border-gray-200">
                   <tr>
@@ -380,9 +456,6 @@ export default function Dashboard() {
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                       Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                      Owner
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                       Contact
@@ -412,9 +485,6 @@ export default function Dashboard() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {lead.location || '-'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {lead.owner_first_name || ''} {lead.owner_last_name || ''}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         <div className="flex flex-col gap-1">
@@ -513,7 +583,8 @@ export default function Dashboard() {
                   ))}
                 </tbody>
               </table>
-            </div>
+              </div>
+            </>
           )}
         </div>
 
