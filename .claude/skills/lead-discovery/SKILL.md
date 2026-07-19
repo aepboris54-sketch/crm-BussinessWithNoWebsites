@@ -99,11 +99,16 @@ from `includeWebResults`:
      nothing about their actual digital presence.
    - Facebook page found, a booking/marketplace platform listed — studio24,
      Notino, Booksy, Fresha, Treatwell, or similar — → **drop this lead**, same as
-     a real website, don't bother checking liveness. Unlike the business.site
-     case, this one took real ongoing effort: the owner signed up, uploaded
-     photos and a price list, and keeps a bookable profile current. That's
-     functionally the digital presence we'd be pitching, just hosted on someone
-     else's platform instead of their own domain — not worth pursuing.
+     a real website, don't bother checking liveness. The reasoning here isn't
+     "this counts as a website" (it doesn't — the platform built the profile, not
+     the business, same as business.site). It's that choosing a free/cheap
+     platform tool over paying a developer is itself the disqualifying signal:
+     this business has already shown it's not willing to pay for custom web
+     development, which is exactly what we'd be selling. A business with zero
+     presence anywhere is a better prospect than one that solved the problem
+     cheaply on its own. Apply the same read to any other free/cheap DIY option
+     you encounter (Wix/Squarespace/Google Sites free tiers, etc.) — the test is
+     "did they choose a paid-developer-free path," not "does a URL exist."
    - Facebook page found, a real custom website listed → fetch that URL with
      native `WebFetch` (free) to see if it's actually alive:
      - Loads and looks like a real, current site → **drop this lead entirely**, it
