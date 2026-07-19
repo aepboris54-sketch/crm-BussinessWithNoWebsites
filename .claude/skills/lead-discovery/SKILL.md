@@ -79,12 +79,19 @@ from `includeWebResults`:
    - No Facebook page found at all → qualifies. Genuinely no web presence found
      anywhere.
    - Facebook page found, no website listed → qualifies. Clean "no website" lead.
-   - Facebook page found, website listed, but the URL is itself a placeholder —
-     `*.business.site` (Google's old auto-generated Business Profile mini-site;
-     Google discontinued this service in 2024, so most of these now 404 anyway),
-     a Linktree/social-bio link, or another social host — → **still qualifies**.
-     Nobody built this; it doesn't count as a website, don't even bother fetching
-     it to check liveness.
+   - Facebook page found, website listed, but it's not really a website the
+     business built — → **still qualifies**, don't even bother fetching it to
+     check liveness. The test: did the business author this page's content, or
+     are they just a listing on someone else's platform? Both count as "not a
+     website": `*.business.site` (Google's old auto-generated Business Profile
+     mini-site — Google discontinued this in 2024, so most of these now 404
+     anyway), a Linktree/social-bio link, any social host, or a third-party
+     marketplace/booking-platform redirect (Notino, Booksy, Fresha, Treatwell,
+     and similar — these are directory listings the business didn't build, not
+     their own site, even though the actor reports them in the `website` field).
+     While you're in there, also check the actor's `websites` array — it
+     sometimes includes an Instagram profile even when no real website exists;
+     grab that for `instagram_url` on insert, it's free extra contact data.
    - Facebook page found, a real (non-placeholder) website listed → fetch that URL
      with native `WebFetch` (free) to see if it's actually alive:
      - Loads and looks like a real, current site → **drop this lead entirely**, it
