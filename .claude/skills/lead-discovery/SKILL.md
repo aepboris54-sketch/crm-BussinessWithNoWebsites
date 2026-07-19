@@ -58,12 +58,24 @@ For each candidate that survived Step 1 and doesn't already have a Facebook URL
 from `includeWebResults`:
 
 1. **Find their Facebook page** with a plain native `WebSearch` — e.g. `"<company
-   name>" <neighborhood or Sofia> facebook`. This is free. Don't reach for a
-   dedicated Apify "Facebook search by name" actor for this part — the ones
-   available on the Apify Store for that specific job (`powerai/facebook-page-search-scraper`,
-   `powerai/facebook-people-search-scraper`, `scrapio/facebook-groups-search-scraper`)
-   all had thin usage and weak or single-review ratings when checked. WebSearch is
-   good enough for "does a Facebook page for this business exist, and what's the URL."
+   name>" <neighborhood or Sofia> facebook`, or better, the exact phone number in
+   quotes if the name is generic (`"Salon"`, `"Avangard"` — common Bulgarian salon
+   names collide across many cities; a phone number doesn't). This is free, but be
+   honest about its real hit rate: it works well for distinctive names, and fails
+   often for small local businesses — Facebook's own content mostly isn't indexed
+   by Google, so a miss here does not mean no page exists, only that this method
+   didn't find it. **Don't reach for a dedicated Apify "Facebook search by name"
+   actor as a fallback** — `powerai/facebook-page-search-scraper` was tested live
+   against a business with a confirmed real Facebook page (found by the user
+   manually) and returned zero results, matching its thin usage and weak rating
+   on the Store. It isn't a fallback worth paying for.
+
+   When a search comes back empty, say so plainly to the user as "couldn't
+   confirm either way" rather than silently reporting the lead as a clean
+   "no website" — those are different confidence levels, and conflating them
+   erodes trust once the user finds a page you missed. If the user has Facebook
+   access themselves (logged-in search surfaces things anonymous tools can't),
+   they may be able to check faster than any scraper can.
 
 2. **Read the page's listed website** with the Apify actor
    `apify/facebook-page-contact-information` (official Apify actor, well-rated,
@@ -76,8 +88,9 @@ from `includeWebResults`:
    for one candidate plus the flat per-run charge, so batching is strictly cheaper.
 
 3. **Apply the result**:
-   - No Facebook page found at all → qualifies. Genuinely no web presence found
-     anywhere.
+   - `WebSearch` found nothing → qualifies, but label it on the shortlist as
+     "no Facebook found (unconfirmed)" rather than a clean "no website" — the
+     search missing it isn't the same as it not existing.
    - Facebook page found, no website listed → qualifies. Clean "no website" lead.
    - Facebook page found, website listed, but it's not really a website the
      business built — → **still qualifies**, don't even bother fetching it to
