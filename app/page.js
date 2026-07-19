@@ -13,6 +13,7 @@ import {
   Facebook,
   Instagram,
   Linkedin,
+  Globe,
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -52,6 +53,7 @@ export default function Dashboard() {
     industry: '',
     location: '',
     service_type: 'ai_chatbot',
+    website_url: '',
   });
 
   useEffect(() => {
@@ -285,6 +287,16 @@ export default function Dashboard() {
 
               <input
                 type="url"
+                placeholder="Website URL"
+                value={form.website_url}
+                onChange={(e) =>
+                  setForm({ ...form, website_url: e.target.value })
+                }
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <input
+                type="url"
                 placeholder="Facebook URL"
                 value={form.facebook_url}
                 onChange={(e) =>
@@ -422,6 +434,17 @@ export default function Dashboard() {
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <div className="flex gap-2">
+                          {lead.website_url && (
+                            <a
+                              href={lead.website_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-600 hover:text-gray-900"
+                              title="Website"
+                            >
+                              <Globe size={16} />
+                            </a>
+                          )}
                           {lead.facebook_url && (
                             <a
                               href={lead.facebook_url}
