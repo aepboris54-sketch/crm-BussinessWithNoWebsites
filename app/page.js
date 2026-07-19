@@ -8,9 +8,11 @@ import {
   Plus,
   X,
   Search,
-  ExternalLink,
   Loader2,
   Trash2,
+  Facebook,
+  Instagram,
+  Linkedin,
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -378,10 +380,10 @@ export default function Dashboard() {
                               href={lead.facebook_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-500 hover:text-blue-700"
+                              className="text-blue-600 hover:text-blue-800"
                               title="Facebook"
                             >
-                              <ExternalLink size={16} />
+                              <Facebook size={16} />
                             </a>
                           )}
                           {lead.linkedin_url && (
@@ -392,7 +394,7 @@ export default function Dashboard() {
                               className="text-blue-700 hover:text-blue-900"
                               title="LinkedIn"
                             >
-                              <ExternalLink size={16} />
+                              <Linkedin size={16} />
                             </a>
                           )}
                           {lead.instagram_url && (
@@ -403,7 +405,7 @@ export default function Dashboard() {
                               className="text-pink-600 hover:text-pink-800"
                               title="Instagram"
                             >
-                              <ExternalLink size={16} />
+                              <Instagram size={16} />
                             </a>
                           )}
                         </div>
