@@ -54,6 +54,7 @@ export default function Dashboard() {
     location: '',
     service_type: 'ai_chatbot',
     website_url: '',
+    notes: '',
   });
 
   useEffect(() => {
@@ -133,6 +134,14 @@ export default function Dashboard() {
 
     if (error) {
       console.error('Error updating status:', error);
+    }
+  };
+
+  const handleNotesBlur = async (id, notes) => {
+    const { error } = await supabase.from('leads').update({ notes }).eq('id', id);
+
+    if (error) {
+      console.error('Error updating notes:', error);
     }
   };
 
@@ -345,6 +354,14 @@ export default function Dashboard() {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
+              <textarea
+                placeholder="Notes — what to say when you call..."
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                rows={2}
+                className="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              />
+
               <button
                 type="submit"
                 disabled={submitting || !form.company_name}
@@ -437,6 +454,14 @@ export default function Dashboard() {
                       </select>
                     </div>
 
+                    <textarea
+                      defaultValue={lead.notes || ''}
+                      onBlur={(e) => handleNotesBlur(lead.id, e.target.value)}
+                      placeholder="What to say when you call..."
+                      rows={2}
+                      className="w-full mt-3 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    />
+
                     <p className="text-xs text-gray-400 mt-2">
                       {new Date(lead.created_at).toLocaleDateString()}
                     </p>
@@ -462,6 +487,9 @@ export default function Dashboard() {
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                       Social
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Notes
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                       Status
@@ -549,6 +577,15 @@ export default function Dashboard() {
                             </a>
                           )}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <textarea
+                          defaultValue={lead.notes || ''}
+                          onBlur={(e) => handleNotesBlur(lead.id, e.target.value)}
+                          placeholder="What to say when you call..."
+                          rows={2}
+                          className="w-48 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        />
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <select
