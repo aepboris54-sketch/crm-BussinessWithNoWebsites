@@ -44,6 +44,7 @@ export default function Dashboard() {
     linkedin_url: '',
     instagram_url: '',
     industry: '',
+    location: '',
   });
 
   useEffect(() => {
@@ -292,6 +293,16 @@ export default function Dashboard() {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
+              <input
+                type="text"
+                placeholder="Location (city, neighborhood)"
+                value={form.location}
+                onChange={(e) =>
+                  setForm({ ...form, location: e.target.value })
+                }
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
               <button
                 type="submit"
                 disabled={submitting || !form.company_name}
@@ -326,6 +337,9 @@ export default function Dashboard() {
                       Industry
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                       Owner
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
@@ -353,6 +367,9 @@ export default function Dashboard() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {lead.industry || '-'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {lead.location || '-'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {lead.owner_first_name || ''} {lead.owner_last_name || ''}

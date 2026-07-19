@@ -13,9 +13,15 @@ learned the hard way (see "Why the Facebook step exists" below).
 Supabase project id: `asrpxtiqpdgbzhjbduaz`. Table `leads` columns: `id`,
 `company_name` (required), `owner_first_name`, `owner_last_name`, `email`, `phone`,
 `facebook_url`, `linkedin_url`, `instagram_url`, `status` (New/Contacted/In
-Progress/Closed-Won/Closed-Lost, defaults New), `industry`, `created_at`,
-`updated_at`. Realtime is already on and the dashboard already subscribes to the
-table — inserting a row via SQL shows up live with zero app-code changes.
+Progress/Closed-Won/Closed-Lost, defaults New), `industry`, `location`,
+`created_at`, `updated_at`. Realtime is already on and the dashboard already
+subscribes to the table — inserting a row via SQL shows up live with zero
+app-code changes.
+
+`location` holds a short "neighborhood, city" string (e.g. `"ж.к. Връбница 1,
+София"`) — take it straight from the Google Maps actor's `neighborhood` field in
+Step 1 (fall back to just the city if `neighborhood` is empty). The user wants to
+see at a glance where each lead is without opening a map.
 
 If the Apify or Supabase MCP tools aren't visible yet, load them with `ToolSearch`
 (queries `"apify"` / `"select:mcp__f8fbb57a...__execute_sql"` or similar) before
@@ -153,7 +159,7 @@ dropping them — let the user make the final call.
 
 ## Step 4 — Show the shortlist, wait for approval
 
-Never insert without asking first. Present each candidate with: company, industry,
+Never insert without asking first. Present each candidate with: company, industry, location,
 phone, Facebook URL if found, site status ("no site" / "has old/broken site"), and
 dupe flag if any. The user may approve only some of the list — that's normal, don't
 treat a partial approval as a rejection of the rest, and don't assume silence on an
@@ -167,10 +173,10 @@ string with no bind-parameter support, and scraped business names sometimes
 contain apostrophes:
 
 ```sql
-insert into leads (company_name, phone, facebook_url, industry)
+insert into leads (company_name, phone, facebook_url, industry, location)
 values
-  ($$Name$$, $$Phone$$, $$https://facebook.com/...$$, $$Industry$$),
-  ($$Name 2$$, $$Phone 2$$, null, $$Industry 2$$);
+  ($$Name$$, $$Phone$$, $$https://facebook.com/...$$, $$Industry$$, $$Neighborhood, Sofia$$),
+  ($$Name 2$$, $$Phone 2$$, null, $$Industry 2$$, $$Neighborhood 2, Sofia$$);
 ```
 
 Leave `id`, `status`, `created_at`, `updated_at` unset — table defaults handle
