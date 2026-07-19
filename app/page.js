@@ -25,12 +25,18 @@ const STATUS_COLORS = {
 
 const STATUS_OPTIONS = ['New', 'Contacted', 'In Progress', 'Closed-Won', 'Closed-Lost'];
 
+const SERVICE_TABS = [
+  { value: 'ai_chatbot', label: 'AI Chatbot Leads' },
+  { value: 'website', label: 'No-Website Leads' },
+];
+
 export default function Dashboard() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [serviceTab, setServiceTab] = useState('ai_chatbot');
   const [submitting, setSubmitting] = useState(false);
   const subscriptionRef = useRef(null);
 
@@ -45,6 +51,7 @@ export default function Dashboard() {
     instagram_url: '',
     industry: '',
     location: '',
+    service_type: 'ai_chatbot',
   });
 
   useEffect(() => {
@@ -108,6 +115,8 @@ export default function Dashboard() {
         linkedin_url: '',
         instagram_url: '',
         industry: '',
+        location: '',
+        service_type: serviceTab,
       });
       setShowForm(false);
     }
@@ -144,7 +153,9 @@ export default function Dashboard() {
     const matchesStatus =
       statusFilter === 'All' || lead.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    const matchesService = (lead.service_type || 'website') === serviceTab;
+
+    return matchesSearch && matchesStatus && matchesService;
   });
 
   return (
@@ -157,9 +168,28 @@ export default function Dashboard() {
           <p className="text-gray-600">Manage and track your business leads</p>
         </div>
 
+        <div className="mb-6 flex gap-2 border-b border-gray-200">
+          {SERVICE_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setServiceTab(tab.value)}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition ${
+                serviceTab === tab.value
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         <div className="mb-6 flex gap-4 flex-wrap items-center">
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              setForm((f) => ({ ...f, service_type: serviceTab }));
+              setShowForm(!showForm);
+            }}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
             <Plus size={20} />
@@ -465,8 +495,11 @@ export default function Dashboard() {
         </div>
 
         <div className="mt-6 text-sm text-gray-600 text-center">
-          Total leads: <span className="font-semibold">{leads.length}</span> •
-          Filtered: <span className="font-semibold">{filteredLeads.length}</span>
+          {SERVICE_TABS.find((t) => t.value === serviceTab)?.label}:{' '}
+          <span className="font-semibold">
+            {leads.filter((l) => (l.service_type || 'website') === serviceTab).length}
+          </span>{' '}
+          • Filtered: <span className="font-semibold">{filteredLeads.length}</span>
         </div>
       </div>
     </div>
