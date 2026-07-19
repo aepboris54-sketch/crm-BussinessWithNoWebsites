@@ -161,10 +161,12 @@ from `includeWebResults`:
        site" — it's a different pitch (rebuild vs. build-from-scratch), and the
        user should know which one they're looking at.
 
-While you're reading the Facebook page's data either way, also check the actor's
-`websites` array for an Instagram profile — it sometimes lists one even when no
-real website exists. Grab that for `instagram_url` on insert; it's free extra
-contact data and doesn't change the qualification call above.
+While you're reading the Facebook page's data either way — via the actor or via a
+logged-in Claude in Chrome contact-info page — also grab whatever else is sitting
+right there for free: an Instagram profile from the actor's `websites` array, and
+an email from the page's "Contact info" section. Neither changes the
+qualification call above, but both go straight into `instagram_url` / `email` on
+insert instead of being left blank when they were sitting in plain view.
 
 Whenever a Facebook page turns up for a lead, record its URL in `facebook_url` at
 insert time regardless of how the website check came out — it's a live contact
