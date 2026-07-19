@@ -14,6 +14,8 @@ import {
   Instagram,
   Linkedin,
   Globe,
+  CheckCircle2,
+  Circle,
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -134,6 +136,17 @@ export default function Dashboard() {
 
     if (error) {
       console.error('Error updating status:', error);
+    }
+  };
+
+  const handleAuditToggle = async (id, currentValue) => {
+    const { error } = await supabase
+      .from('leads')
+      .update({ human_audit: !currentValue })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating audit flag:', error);
     }
   };
 
@@ -388,9 +401,21 @@ export default function Dashboard() {
             <>
               <div className="md:hidden divide-y divide-gray-200">
                 {filteredLeads.map((lead) => (
-                  <div key={lead.id} className="p-4">
+                  <div
+                    key={lead.id}
+                    className={`p-4 ${lead.human_audit ? 'bg-green-50 border-l-4 border-green-500' : ''}`}
+                  >
                     <div className="flex justify-between items-start gap-2 mb-2">
-                      <h3 className="font-medium text-gray-900">{lead.company_name}</h3>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleAuditToggle(lead.id, lead.human_audit)}
+                          title={lead.human_audit ? 'Human audit: approved' : 'Mark as human-audited'}
+                          className={lead.human_audit ? 'text-green-600' : 'text-gray-300 hover:text-gray-400'}
+                        >
+                          {lead.human_audit ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                        </button>
+                        <h3 className="font-medium text-gray-900">{lead.company_name}</h3>
+                      </div>
                       <button
                         onClick={() => handleDeleteLead(lead.id, lead.company_name)}
                         className="text-red-500 hover:text-red-700 shrink-0"
@@ -474,6 +499,9 @@ export default function Dashboard() {
                 <thead className="bg-gray-100 border-b border-gray-200">
                   <tr>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Audit
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                       Company
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
@@ -504,7 +532,19 @@ export default function Dashboard() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredLeads.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-gray-50 transition">
+                    <tr
+                      key={lead.id}
+                      className={`hover:bg-gray-50 transition ${lead.human_audit ? 'bg-green-50' : ''}`}
+                    >
+                      <td className="px-6 py-4 text-sm">
+                        <button
+                          onClick={() => handleAuditToggle(lead.id, lead.human_audit)}
+                          title={lead.human_audit ? 'Human audit: approved' : 'Mark as human-audited'}
+                          className={lead.human_audit ? 'text-green-600' : 'text-gray-300 hover:text-gray-400'}
+                        >
+                          {lead.human_audit ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                        </button>
+                      </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {lead.company_name}
                       </td>
