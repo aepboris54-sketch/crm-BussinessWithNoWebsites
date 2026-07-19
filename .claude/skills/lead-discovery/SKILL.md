@@ -25,13 +25,26 @@ things (no site vs. has a site) and inserting into the wrong one pollutes both.
 
 Supabase project id: `asrpxtiqpdgbzhjbduaz`. Table `leads` columns: `id`,
 `company_name` (required), `owner_first_name`, `owner_last_name`, `email`, `phone`,
-`facebook_url`, `linkedin_url`, `instagram_url`, `status` (New/Contacted/In
-Progress/Closed-Won/Closed-Lost, defaults New), `industry`, `location`,
-`service_type` (`website` default / `ai_chatbot`), `created_at`, `updated_at`.
-Realtime is already on and the dashboard already subscribes to the table —
-inserting a row via SQL shows up live with zero app-code changes. The dashboard
-shows the two service lines as separate tabs, filtering client-side on
-`service_type`.
+`facebook_url`, `linkedin_url`, `instagram_url`, `website_url`, `status`
+(New/Contacted/In Progress/Closed-Won/Closed-Lost, defaults New), `industry`,
+`location`, `notes`, `service_type` (`website` default / `ai_chatbot`),
+`created_at`, `updated_at`. Realtime is already on and the dashboard already
+subscribes to the table — inserting a row via SQL shows up live with zero
+app-code changes. The dashboard shows the two service lines as separate tabs,
+filtering client-side on `service_type`, and `notes` is editable straight in the
+UI (mobile card + desktop table), so treat what you write there as a starting
+point the user will refine, not the final word.
+
+**Always write `notes` for every lead you insert** — 3-4 sentences the user can
+glance at right before dialing, not a data dump. Cover: what the business
+actually does day to day (not just the category label), one concrete reason
+they're a good prospect (established — cite the review count/rating if strong;
+or a specific gap — no chat widget despite a busy real-estate site, etc.), and
+anything that shapes the opening line of the call — a name to ask for if you
+found one, the neighborhood if it's relevant small talk, or a detail from their
+reviews/site worth mentioning to prove this isn't a generic script. Skip
+anything you're not confident about rather than padding — a shorter accurate
+note beats a longer speculative one.
 
 `location` holds a short "neighborhood, city" string (e.g. `"ж.к. Връбница 1,
 София"`) — take it straight from the Google Maps actor's `neighborhood` field in
@@ -229,10 +242,10 @@ string with no bind-parameter support, and scraped business names sometimes
 contain apostrophes:
 
 ```sql
-insert into leads (company_name, phone, facebook_url, industry, location)
+insert into leads (company_name, phone, facebook_url, industry, location, notes)
 values
-  ($$Name$$, $$Phone$$, $$https://facebook.com/...$$, $$Industry$$, $$Neighborhood, Sofia$$),
-  ($$Name 2$$, $$Phone 2$$, null, $$Industry 2$$, $$Neighborhood 2, Sofia$$);
+  ($$Name$$, $$Phone$$, $$https://facebook.com/...$$, $$Industry$$, $$Neighborhood, Sofia$$, $$3-4 sentence talking points$$),
+  ($$Name 2$$, $$Phone 2$$, null, $$Industry 2$$, $$Neighborhood 2, Sofia$$, $$3-4 sentence talking points$$);
 ```
 
 Leave `id`, `status`, `created_at`, `updated_at` unset — table defaults handle
@@ -284,8 +297,8 @@ business relying on just that is a good prospect for a real one.
 must set `service_type` explicitly since it doesn't default the way `website`
 leads do:
 ```sql
-insert into leads (company_name, phone, industry, location, service_type)
-values ($$Name$$, $$Phone$$, $$Industry$$, $$Neighborhood, Sofia$$, $$ai_chatbot$$);
+insert into leads (company_name, phone, industry, location, service_type, website_url, notes)
+values ($$Name$$, $$Phone$$, $$Industry$$, $$Neighborhood, Sofia$$, $$ai_chatbot$$, $$https://...$$, $$3-4 sentence talking points$$);
 ```
 
 ## Scope
