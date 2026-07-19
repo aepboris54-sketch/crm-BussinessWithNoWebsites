@@ -1,22 +1,37 @@
 ---
 name: lead-discovery
-description: Find local Sofia businesses with no working website and add qualified ones to the lead-crm CRM (Supabase table `leads`). Use this whenever the user asks to find/search/scrape leads, businesses, shops, or companies for the CRM, mentions "no website" prospects, or references Apify/Google Maps discovery for this project — even if they just say something like "find me electricians" or "get some more leads" without spelling out the full workflow. Covers the Google Maps search, the Facebook fallback check for businesses whose site only appears on their Facebook page, dedup against existing leads, and the review-before-insert flow.
+description: Find local Sofia businesses and add qualified ones to the lead-crm CRM (Supabase table `leads`) under one of two service lines — "no website" leads (Step-by-step section below) or "AI chatbot" leads for medium businesses that already have a site (separate section). Use this whenever the user asks to find/search/scrape leads, businesses, shops, or companies for the CRM, mentions "no website" or "chatbot" prospects, or references Apify/Google Maps discovery for this project — even if they just say something like "find me electricians" or "get some more leads" without spelling out the full workflow or which service line they mean (ask, or infer from context — recent conversation usually makes it clear). Covers the Google Maps search, the Facebook fallback check for businesses whose site only appears on their Facebook page, dedup against existing leads, and the review-before-insert flow.
 ---
 
 # Lead discovery for lead-crm
 
-Runbook for finding real, uncontacted local businesses with no website and adding
-them to the CRM at `/home/boris/lead-crm`. Follow it end to end rather than
-reinventing the search/filter/insert logic each time — it encodes lessons already
-learned the hard way (see "Why the Facebook step exists" below).
+Runbook for finding real, uncontacted local businesses and adding them to the CRM
+at `/home/boris/lead-crm`, under one of two service lines the user sells. Follow
+it end to end rather than reinventing the search/filter/insert logic each time —
+it encodes lessons already learned the hard way (see "Why the Facebook step
+exists" below).
+
+**Two service lines, one table, distinguished by `service_type`:**
+- `website` — businesses with no web presence at all. Pitch: build them a site.
+  Full workflow below ("No-website leads").
+- `ai_chatbot` — medium-sized businesses that already have a working website.
+  Pitch: add an AI chatbot to it. Different qualifying criteria — see "AI chatbot
+  leads" section further down. This is the newer, less-commonly-offered service,
+  and the user wants it prioritized: it's the default tab in the dashboard.
+
+Ask which line the user means if a request is ambiguous ("find me electricians"
+could go either way) rather than guessing — the two lines search for opposite
+things (no site vs. has a site) and inserting into the wrong one pollutes both.
 
 Supabase project id: `asrpxtiqpdgbzhjbduaz`. Table `leads` columns: `id`,
 `company_name` (required), `owner_first_name`, `owner_last_name`, `email`, `phone`,
 `facebook_url`, `linkedin_url`, `instagram_url`, `status` (New/Contacted/In
 Progress/Closed-Won/Closed-Lost, defaults New), `industry`, `location`,
-`created_at`, `updated_at`. Realtime is already on and the dashboard already
-subscribes to the table — inserting a row via SQL shows up live with zero
-app-code changes.
+`service_type` (`website` default / `ai_chatbot`), `created_at`, `updated_at`.
+Realtime is already on and the dashboard already subscribes to the table —
+inserting a row via SQL shows up live with zero app-code changes. The dashboard
+shows the two service lines as separate tabs, filtering client-side on
+`service_type`.
 
 `location` holds a short "neighborhood, city" string (e.g. `"ж.к. Връбница 1,
 София"`) — take it straight from the Google Maps actor's `neighborhood` field in
@@ -26,6 +41,8 @@ see at a glance where each lead is without opening a map.
 If the Apify or Supabase MCP tools aren't visible yet, load them with `ToolSearch`
 (queries `"apify"` / `"select:mcp__f8fbb57a...__execute_sql"` or similar) before
 starting.
+
+## No-website leads (`service_type = 'website'`)
 
 ## Step 1 — Search Google Maps
 
@@ -230,9 +247,51 @@ Google Business Profiles don't carry an owner name field at all, and this actor'
 email-enrichment add-ons work by crawling the business's own website — which, for
 every lead that qualifies here, by definition doesn't exist.
 
+## AI chatbot leads (`service_type = 'ai_chatbot'`)
+
+Same tools, opposite target: medium-sized businesses that already run a website
+and don't yet have a chat widget on it. Pitch is "add an AI chatbot," not "build
+you a site," so everything about qualifying a lead flips accordingly.
+
+**Search**: same Google Maps defaults as above (Sofia, 5km radius,
+`skipClosedPlaces: true`), but flip the website filter to `website: "withWebsite"`.
+Skip the whole Facebook-verification block (Step 2 above) — it exists purely to
+catch businesses with a *hidden* website, which is moot once you're already
+selecting for "has one."
+
+**"Medium business" proxy signals** — Google Maps has no employee-count field, so
+lean on what's there: a meaningfully higher review count than the no-website
+line's bar (50+ is a reasonable floor, hundreds is better), a `$$`–`$$$` price
+level, and established categories (clinics, agencies, multi-service retail). A
+single-location franchise outlet is fine here unlike the no-website line — you're
+not asking them to greenlight a whole new site, just add a widget to the one
+that exists, which a local manager can often decide alone.
+
+**The qualifying check — does the site already have a chatbot?** Fetch the
+business's website with `WebFetch` (free) and ask it specifically to look for
+chat-widget `<script>` tags in the page source, not just describe the page —
+these load via script references that survive HTML→markdown conversion even
+without executing JS: Intercom (`widget.intercom.io`, `intercomSettings`), Drift
+(`js.driftt.com`), Tidio (`code.tidio.co`), Crisp (`client.crisp.chat`), Tawk.to
+(`embed.tawk.to`), HubSpot (`js.hs-scripts.com`), Zendesk (`static.zdassets.com`),
+or a Facebook Messenger plugin (`connect.facebook.net` + `fb-customerchat`). Any
+of these present → drop the lead, they already have what you'd be pitching. A
+bare WhatsApp click-to-chat link does **not** disqualify — it's a contact
+shortcut a visitor has to already know to look for, not an actual chatbot, and a
+business relying on just that is a good prospect for a real one.
+
+**Dedup, shortlist, insert** — same mechanics as the no-website line. `INSERT`
+must set `service_type` explicitly since it doesn't default the way `website`
+leads do:
+```sql
+insert into leads (company_name, phone, industry, location, service_type)
+values ($$Name$$, $$Phone$$, $$Industry$$, $$Neighborhood, Sofia$$, $$ai_chatbot$$);
+```
+
 ## Scope
 
 This is a chat-driven workflow, not an app feature — there's no "Discover Leads"
 button and there shouldn't be one unless the user explicitly asks for it. Running
 this skill means calling MCP tools in conversation, not writing or editing files in
-`/home/boris/lead-crm`.
+`/home/boris/lead-crm`. (The dashboard's two tabs are a display filter on
+`service_type`, already shipped — that's a UI concern, not part of this runbook.)
