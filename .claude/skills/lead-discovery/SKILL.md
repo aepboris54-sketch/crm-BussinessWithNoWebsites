@@ -63,6 +63,20 @@ sloppy. Do this check before showing anything to the user, not after.
 For each candidate that survived Step 1 and doesn't already have a Facebook URL
 from `includeWebResults`:
 
+0. **If Claude in Chrome is connected and logged into Facebook, use it instead of
+   WebSearch — it's strictly more reliable.** Navigate to
+   `https://www.facebook.com/search/pages/?q=<exact phone number, digits only>`
+   and read the results. A phone number is the highest-confidence query you can
+   run: it's unique, so a clean "We didn't find any results" is a real negative,
+   not just a miss. Name-based queries (`?q=<business name>`) stay risky even
+   logged in — common salon names (Gabi, Sharmant, Avangard, Cveti) return
+   same-named businesses in Pleven or Lyulin as readily as the one you want, with
+   nothing to disambiguate them. **A lead with no phone number on its Google Maps
+   listing structurally can't reach this confidence tier** — you're stuck with a
+   name search and its collision risk, so if the user wants zero-uncertainty
+   results, that kind of lead is the one to cut, not to guess on. Not logged in,
+   or Claude in Chrome unavailable? Fall back to step 1.
+
 1. **Find their Facebook page** with a plain native `WebSearch` — e.g. `"<company
    name>" <neighborhood or Sofia> facebook`, or better, the exact phone number in
    quotes if the name is generic (`"Salon"`, `"Avangard"` — common Bulgarian salon
