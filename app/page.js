@@ -10,6 +10,7 @@ import {
   Search,
   ExternalLink,
   Loader2,
+  Trash2,
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -118,6 +119,16 @@ export default function Dashboard() {
 
     if (error) {
       console.error('Error updating status:', error);
+    }
+  };
+
+  const handleDeleteLead = async (id, companyName) => {
+    if (!confirm(`Delete ${companyName}? This cannot be undone.`)) return;
+
+    const { error } = await supabase.from('leads').delete().eq('id', id);
+
+    if (error) {
+      console.error('Error deleting lead:', error);
     }
   };
 
@@ -327,6 +338,9 @@ export default function Dashboard() {
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                       Date Added
                     </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -413,6 +427,15 @@ export default function Dashboard() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {new Date(lead.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <button
+                          onClick={() => handleDeleteLead(lead.id, lead.company_name)}
+                          className="text-red-500 hover:text-red-700"
+                          title="Delete lead"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))}
