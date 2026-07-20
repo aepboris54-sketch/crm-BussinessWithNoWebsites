@@ -371,8 +371,8 @@ export default function Dashboard() {
                 placeholder="Notes — what to say when you call..."
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                rows={2}
-                className="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                rows={4}
+                className="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
               />
 
               <button
@@ -483,8 +483,8 @@ export default function Dashboard() {
                       defaultValue={lead.notes || ''}
                       onBlur={(e) => handleNotesBlur(lead.id, e.target.value)}
                       placeholder="What to say when you call..."
-                      rows={2}
-                      className="w-full mt-3 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      rows={4}
+                      className="w-full mt-3 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                     />
 
                     <p className="text-xs text-gray-400 mt-2">
@@ -623,8 +623,8 @@ export default function Dashboard() {
                           defaultValue={lead.notes || ''}
                           onBlur={(e) => handleNotesBlur(lead.id, e.target.value)}
                           placeholder="What to say when you call..."
-                          rows={2}
-                          className="w-48 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                          rows={4}
+                          className="w-72 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                         />
                       </td>
                       <td className="px-6 py-4 text-sm">
