@@ -150,11 +150,11 @@ export default function Dashboard() {
     }
   };
 
-  const handleNotesBlur = async (id, notes) => {
-    const { error } = await supabase.from('leads').update({ notes }).eq('id', id);
+  const handleFieldBlur = async (id, field, value) => {
+    const { error } = await supabase.from('leads').update({ [field]: value }).eq('id', id);
 
     if (error) {
-      console.error('Error updating notes:', error);
+      console.error(`Error updating ${field}:`, error);
     }
   };
 
@@ -406,15 +406,19 @@ export default function Dashboard() {
                     className={`p-4 ${lead.human_audit ? 'bg-green-50 border-l-4 border-green-500' : ''}`}
                   >
                     <div className="flex justify-between items-start gap-2 mb-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
                         <button
                           onClick={() => handleAuditToggle(lead.id, lead.human_audit)}
                           title={lead.human_audit ? 'Human audit: approved' : 'Mark as human-audited'}
-                          className={lead.human_audit ? 'text-green-600' : 'text-gray-300 hover:text-gray-400'}
+                          className={`shrink-0 ${lead.human_audit ? 'text-green-600' : 'text-gray-300 hover:text-gray-400'}`}
                         >
                           {lead.human_audit ? <CheckCircle2 size={20} /> : <Circle size={20} />}
                         </button>
-                        <h3 className="font-medium text-gray-900">{lead.company_name}</h3>
+                        <input
+                          defaultValue={lead.company_name}
+                          onBlur={(e) => handleFieldBlur(lead.id, 'company_name', e.target.value)}
+                          className="font-medium text-gray-900 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none w-full"
+                        />
                       </div>
                       <button
                         onClick={() => handleDeleteLead(lead.id, lead.company_name)}
@@ -425,23 +429,40 @@ export default function Dashboard() {
                       </button>
                     </div>
 
-                    <p className="text-sm text-gray-500 mb-2">
-                      {[lead.industry, lead.location].filter(Boolean).join(' • ') || '-'}
-                    </p>
+                    <div className="flex gap-2 mb-2 text-sm text-gray-500">
+                      <input
+                        defaultValue={lead.industry || ''}
+                        onBlur={(e) => handleFieldBlur(lead.id, 'industry', e.target.value)}
+                        placeholder="Industry"
+                        className="bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none flex-1 min-w-0"
+                      />
+                      <input
+                        defaultValue={lead.location || ''}
+                        onBlur={(e) => handleFieldBlur(lead.id, 'location', e.target.value)}
+                        placeholder="Location"
+                        className="bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none flex-1 min-w-0"
+                      />
+                    </div>
 
                     <div className="flex flex-col gap-1 mb-3 text-sm text-gray-600">
-                      {lead.email && (
-                        <div className="flex items-center gap-2">
-                          <Mail size={16} className="text-blue-600" />
-                          <span>{lead.email}</span>
-                        </div>
-                      )}
-                      {lead.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone size={16} className="text-green-600" />
-                          <span>{lead.phone}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Mail size={16} className="text-blue-600 shrink-0" />
+                        <input
+                          defaultValue={lead.email || ''}
+                          onBlur={(e) => handleFieldBlur(lead.id, 'email', e.target.value)}
+                          placeholder="Email"
+                          className="bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none w-full"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone size={16} className="text-green-600 shrink-0" />
+                        <input
+                          defaultValue={lead.phone || ''}
+                          onBlur={(e) => handleFieldBlur(lead.id, 'phone', e.target.value)}
+                          placeholder="Phone"
+                          className="bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none w-full"
+                        />
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -481,7 +502,7 @@ export default function Dashboard() {
 
                     <textarea
                       defaultValue={lead.notes || ''}
-                      onBlur={(e) => handleNotesBlur(lead.id, e.target.value)}
+                      onBlur={(e) => handleFieldBlur(lead.id, 'notes', e.target.value)}
                       placeholder="What to say when you call..."
                       rows={4}
                       className="w-full mt-3 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
@@ -546,28 +567,44 @@ export default function Dashboard() {
                         </button>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {lead.company_name}
+                        <input
+                          defaultValue={lead.company_name}
+                          onBlur={(e) => handleFieldBlur(lead.id, 'company_name', e.target.value)}
+                          className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
+                        />
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {lead.industry || '-'}
+                        <input
+                          defaultValue={lead.industry || ''}
+                          onBlur={(e) => handleFieldBlur(lead.id, 'industry', e.target.value)}
+                          className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
+                        />
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {lead.location || '-'}
+                        <input
+                          defaultValue={lead.location || ''}
+                          onBlur={(e) => handleFieldBlur(lead.id, 'location', e.target.value)}
+                          className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
+                        />
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         <div className="flex flex-col gap-1">
-                          {lead.email && (
-                            <div className="flex items-center gap-2">
-                              <Mail size={16} className="text-blue-600" />
-                              <span>{lead.email}</span>
-                            </div>
-                          )}
-                          {lead.phone && (
-                            <div className="flex items-center gap-2">
-                              <Phone size={16} className="text-green-600" />
-                              <span>{lead.phone}</span>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-2">
+                            <Mail size={16} className="text-blue-600 shrink-0" />
+                            <input
+                              defaultValue={lead.email || ''}
+                              onBlur={(e) => handleFieldBlur(lead.id, 'email', e.target.value)}
+                              className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone size={16} className="text-green-600 shrink-0" />
+                            <input
+                              defaultValue={lead.phone || ''}
+                              onBlur={(e) => handleFieldBlur(lead.id, 'phone', e.target.value)}
+                              className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
+                            />
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm">
@@ -621,7 +658,7 @@ export default function Dashboard() {
                       <td className="px-6 py-4 text-sm">
                         <textarea
                           defaultValue={lead.notes || ''}
-                          onBlur={(e) => handleNotesBlur(lead.id, e.target.value)}
+                          onBlur={(e) => handleFieldBlur(lead.id, 'notes', e.target.value)}
                           placeholder="What to say when you call..."
                           rows={4}
                           className="w-72 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
