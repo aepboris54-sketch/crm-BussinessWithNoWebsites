@@ -16,6 +16,7 @@ import {
   Globe,
   CheckCircle2,
   Circle,
+  Download,
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -186,14 +187,24 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Lead Generation CRM
-          </h1>
-          <p className="text-gray-600">Manage and track your business leads</p>
+        <div className="mb-8 flex justify-between items-start gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Lead Generation CRM
+            </h1>
+            <p className="text-gray-600">Manage and track your business leads</p>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="print:hidden flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition shrink-0"
+            title="Export current tab to PDF (opens print dialog — choose 'Save as PDF')"
+          >
+            <Download size={18} />
+            Export PDF
+          </button>
         </div>
 
-        <div className="mb-6 flex gap-2 border-b border-gray-200">
+        <div className="mb-6 flex gap-2 border-b border-gray-200 print:hidden">
           {SERVICE_TABS.map((tab) => (
             <button
               key={tab.value}
@@ -209,7 +220,7 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div className="mb-6 flex gap-4 flex-wrap items-center">
+        <div className="mb-6 flex gap-4 flex-wrap items-center print:hidden">
           <button
             onClick={() => {
               setForm((f) => ({ ...f, service_type: serviceTab }));
@@ -400,7 +411,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <>
-              <div className="lg:hidden divide-y divide-gray-200">
+              <div className="lg:hidden print:hidden divide-y divide-gray-200">
                 {filteredLeads.map((lead) => (
                   <div
                     key={lead.id}
@@ -516,11 +527,11 @@ export default function Dashboard() {
                 ))}
               </div>
 
-              <div className="hidden lg:block overflow-x-auto">
+              <div className="hidden lg:block print:block overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-100 border-b border-gray-200">
                   <tr>
-                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 print:hidden">
                       Audit
                     </th>
                     <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
@@ -547,7 +558,7 @@ export default function Dashboard() {
                     <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Date Added
                     </th>
-                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 print:hidden">
                       Actions
                     </th>
                   </tr>
@@ -558,7 +569,7 @@ export default function Dashboard() {
                       key={lead.id}
                       className={`hover:bg-gray-50 transition ${lead.human_audit ? 'bg-green-50' : ''}`}
                     >
-                      <td className="px-3 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm print:hidden">
                         <button
                           onClick={() => handleAuditToggle(lead.id, lead.human_audit)}
                           title={lead.human_audit ? 'Human audit: approved' : 'Mark as human-audited'}
@@ -685,7 +696,7 @@ export default function Dashboard() {
                       <td className="px-3 py-4 text-sm text-gray-600">
                         {new Date(lead.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-3 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm print:hidden">
                         <button
                           onClick={() => handleDeleteLead(lead.id, lead.company_name)}
                           className="text-red-500 hover:text-red-700"
@@ -703,12 +714,16 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="mt-6 text-sm text-gray-600 text-center">
+        <div className="mt-6 text-sm text-gray-600 text-center print:hidden">
           {SERVICE_TABS.find((t) => t.value === serviceTab)?.label}:{' '}
           <span className="font-semibold">
             {leads.filter((l) => (l.service_type || 'website') === serviceTab).length}
           </span>{' '}
           • Filtered: <span className="font-semibold">{filteredLeads.length}</span>
+        </div>
+
+        <div className="hidden print:block mt-4 text-xs text-gray-500">
+          {SERVICE_TABS.find((t) => t.value === serviceTab)?.label} — {filteredLeads.length} contacts — exported {new Date().toLocaleDateString()}
         </div>
       </div>
     </div>
