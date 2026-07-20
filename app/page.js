@@ -399,7 +399,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <>
-              <div className="md:hidden divide-y divide-gray-200">
+              <div className="lg:hidden divide-y divide-gray-200">
                 {filteredLeads.map((lead) => (
                   <div
                     key={lead.id}
@@ -515,7 +515,7 @@ export default function Dashboard() {
                 ))}
               </div>
 
-              <div className="hidden md:block overflow-x-auto">
+              <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-100 border-b border-gray-200">
                   <tr>
