@@ -519,34 +519,34 @@ export default function Dashboard() {
               <table className="w-full">
                 <thead className="bg-gray-100 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Audit
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Company
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Industry
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Location
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Contact
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Social
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Notes
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Date Added
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900">
                       Actions
                     </th>
                   </tr>
@@ -557,7 +557,7 @@ export default function Dashboard() {
                       key={lead.id}
                       className={`hover:bg-gray-50 transition ${lead.human_audit ? 'bg-green-50' : ''}`}
                     >
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm">
                         <button
                           onClick={() => handleAuditToggle(lead.id, lead.human_audit)}
                           title={lead.human_audit ? 'Human audit: approved' : 'Mark as human-audited'}
@@ -566,28 +566,28 @@ export default function Dashboard() {
                           {lead.human_audit ? <CheckCircle2 size={20} /> : <Circle size={20} />}
                         </button>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <td className="px-3 py-4 text-sm font-medium text-gray-900">
                         <input
                           defaultValue={lead.company_name}
                           onBlur={(e) => handleFieldBlur(lead.id, 'company_name', e.target.value)}
                           className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
                         />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-3 py-4 text-sm text-gray-600">
                         <input
                           defaultValue={lead.industry || ''}
                           onBlur={(e) => handleFieldBlur(lead.id, 'industry', e.target.value)}
                           className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
                         />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-3 py-4 text-sm text-gray-600">
                         <input
                           defaultValue={lead.location || ''}
                           onBlur={(e) => handleFieldBlur(lead.id, 'location', e.target.value)}
                           className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none"
                         />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-3 py-4 text-sm text-gray-600">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <Mail size={16} className="text-blue-600 shrink-0" />
@@ -607,7 +607,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm">
                         <div className="flex gap-2">
                           {lead.website_url && (
                             <a
@@ -655,16 +655,16 @@ export default function Dashboard() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm">
                         <textarea
                           defaultValue={lead.notes || ''}
                           onBlur={(e) => handleFieldBlur(lead.id, 'notes', e.target.value)}
                           placeholder="What to say when you call..."
                           rows={4}
-                          className="w-72 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                          className="w-56 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                         />
                       </td>
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm">
                         <select
                           value={lead.status}
                           onChange={(e) =>
@@ -681,10 +681,10 @@ export default function Dashboard() {
                           ))}
                         </select>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-3 py-4 text-sm text-gray-600">
                         {new Date(lead.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-3 py-4 text-sm">
                         <button
                           onClick={() => handleDeleteLead(lead.id, lead.company_name)}
                           className="text-red-500 hover:text-red-700"
