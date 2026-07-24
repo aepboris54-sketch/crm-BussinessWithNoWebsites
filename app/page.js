@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Circle,
   Download,
+  Star,
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -149,6 +150,38 @@ export default function Dashboard() {
 
     if (error) {
       console.error('Error updating audit flag:', error);
+    }
+  };
+
+  const handleServiceTypeChange = async (id, newServiceType) => {
+    const { error } = await supabase
+      .from('leads')
+      .update({ service_type: newServiceType })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error moving lead to another sector:', error);
+    }
+  };
+
+  const handlePartnerPickToggle = async (lead) => {
+    const nextValue = !lead.partner_picked;
+    const { error } = await supabase
+      .from('leads')
+      .update({ partner_picked: nextValue })
+      .eq('id', lead.id);
+
+    if (error) {
+      console.error('Error updating partner pick:', error);
+      return;
+    }
+
+    if (nextValue) {
+      fetch('/api/notify-partner-pick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyName: lead.company_name, serviceType: lead.service_type }),
+      }).catch((err) => console.error('Error sending partner-pick notification:', err));
     }
   };
 
@@ -426,6 +459,13 @@ export default function Dashboard() {
                         >
                           {lead.human_audit ? <CheckCircle2 size={20} /> : <Circle size={20} />}
                         </button>
+                        <button
+                          onClick={() => handlePartnerPickToggle(lead)}
+                          title={lead.partner_picked ? 'Избран от партньора' : 'Маркирай като избран от партньора'}
+                          className={`shrink-0 ${lead.partner_picked ? 'text-amber-500' : 'text-gray-300 hover:text-gray-400'}`}
+                        >
+                          <Star size={20} fill={lead.partner_picked ? 'currentColor' : 'none'} />
+                        </button>
                         <input
                           defaultValue={lead.company_name}
                           onBlur={(e) => handleFieldBlur(lead.id, 'company_name', e.target.value)}
@@ -502,6 +542,17 @@ export default function Dashboard() {
                       </div>
 
                       <select
+                        value={lead.service_type || 'website'}
+                        onChange={(e) => handleServiceTypeChange(lead.id, e.target.value)}
+                        title="Премести в друг сектор"
+                        className="px-3 py-1 rounded-full text-xs font-medium border-0 cursor-pointer bg-gray-100 text-gray-700"
+                      >
+                        {SERVICE_TABS.map((tab) => (
+                          <option key={tab.value} value={tab.value}>{tab.label}</option>
+                        ))}
+                      </select>
+
+                      <select
                         value={lead.status}
                         onChange={(e) => handleStatusChange(lead.id, e.target.value)}
                         className={`px-3 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${STATUS_COLORS[lead.status]}`}
@@ -570,13 +621,22 @@ export default function Dashboard() {
                       className={`hover:bg-gray-50 transition ${lead.human_audit ? 'bg-green-50' : ''}`}
                     >
                       <td className="px-3 py-4 text-sm print:hidden">
-                        <button
-                          onClick={() => handleAuditToggle(lead.id, lead.human_audit)}
-                          title={lead.human_audit ? 'Human audit: approved' : 'Mark as human-audited'}
-                          className={lead.human_audit ? 'text-green-600' : 'text-gray-300 hover:text-gray-400'}
-                        >
-                          {lead.human_audit ? <CheckCircle2 size={20} /> : <Circle size={20} />}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleAuditToggle(lead.id, lead.human_audit)}
+                            title={lead.human_audit ? 'Human audit: approved' : 'Mark as human-audited'}
+                            className={lead.human_audit ? 'text-green-600' : 'text-gray-300 hover:text-gray-400'}
+                          >
+                            {lead.human_audit ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                          </button>
+                          <button
+                            onClick={() => handlePartnerPickToggle(lead)}
+                            title={lead.partner_picked ? 'Избран от партньора' : 'Маркирай като избран от партньора'}
+                            className={lead.partner_picked ? 'text-amber-500' : 'text-gray-300 hover:text-gray-400'}
+                          >
+                            <Star size={20} fill={lead.partner_picked ? 'currentColor' : 'none'} />
+                          </button>
+                        </div>
                       </td>
                       <td className="px-3 py-4 text-sm font-medium text-gray-900">
                         <input
@@ -677,21 +737,33 @@ export default function Dashboard() {
                         />
                       </td>
                       <td className="px-3 py-4 text-sm">
-                        <select
-                          value={lead.status}
-                          onChange={(e) =>
-                            handleStatusChange(lead.id, e.target.value)
-                          }
-                          className={`px-3 py-1 rounded-full text-sm font-medium border-0 cursor-pointer ${
-                            STATUS_COLORS[lead.status]
-                          }`}
-                        >
-                          {STATUS_OPTIONS.map((status) => (
-                            <option key={status} value={status}>
-                              {status}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="flex flex-col gap-1 items-start">
+                          <select
+                            value={lead.service_type || 'website'}
+                            onChange={(e) => handleServiceTypeChange(lead.id, e.target.value)}
+                            title="Премести в друг сектор"
+                            className="px-3 py-1 rounded-full text-xs font-medium border-0 cursor-pointer bg-gray-100 text-gray-700"
+                          >
+                            {SERVICE_TABS.map((tab) => (
+                              <option key={tab.value} value={tab.value}>{tab.label}</option>
+                            ))}
+                          </select>
+                          <select
+                            value={lead.status}
+                            onChange={(e) =>
+                              handleStatusChange(lead.id, e.target.value)
+                            }
+                            className={`px-3 py-1 rounded-full text-sm font-medium border-0 cursor-pointer ${
+                              STATUS_COLORS[lead.status]
+                            }`}
+                          >
+                            {STATUS_OPTIONS.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-600">
                         {new Date(lead.created_at).toLocaleDateString()}
