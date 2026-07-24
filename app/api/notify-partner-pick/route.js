@@ -1,7 +1,7 @@
 const SECTOR_LABELS = {
   ai_chatbot: 'AI Chatbot Leads',
   website: 'No-Website Leads',
-  custom_app: 'Custom App Leads',
+  custom_app: 'Database Integration',
 };
 
 export async function POST(request) {

@@ -33,7 +33,7 @@ const STATUS_OPTIONS = ['New', 'Contacted', 'In Progress', 'Closed-Won', 'Closed
 const SERVICE_TABS = [
   { value: 'ai_chatbot', label: 'AI Chatbot Leads' },
   { value: 'website', label: 'No-Website Leads' },
-  { value: 'custom_app', label: 'Custom App Leads' },
+  { value: 'custom_app', label: 'Database Integration' },
 ];
 
 export default function Dashboard() {
