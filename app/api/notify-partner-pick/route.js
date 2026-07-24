@@ -16,9 +16,10 @@ export async function POST(request) {
   }
 
   const sector = SECTOR_LABELS[serviceType] || serviceType || 'unknown sector';
+  const time = new Date().toLocaleString('bg-BG', { timeZone: 'Europe/Sofia' });
   const text = picked
-    ? `⭐ Партньорът избра лийд за построяване:\n${companyName}\nСектор: ${sector}`
-    : `↩️ Партньорът премахна избора на лийд (маркировката е свалена):\n${companyName}\nСектор: ${sector}`;
+    ? `⭐ Партньорът избра лийд за построяване:\n${companyName}\nСектор: ${sector}\nВреме: ${time}`
+    : `↩️ Партньорът премахна избора на лийд (маркировката е свалена):\n${companyName}\nСектор: ${sector}\nВреме: ${time}`;
 
   const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',
