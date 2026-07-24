@@ -5,7 +5,7 @@ const SECTOR_LABELS = {
 };
 
 export async function POST(request) {
-  const { companyName, serviceType } = await request.json();
+  const { companyName, serviceType, picked } = await request.json();
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -16,7 +16,9 @@ export async function POST(request) {
   }
 
   const sector = SECTOR_LABELS[serviceType] || serviceType || 'unknown sector';
-  const text = `⭐ Партньорът избра лийд за построяване:\n${companyName}\nСектор: ${sector}`;
+  const text = picked
+    ? `⭐ Партньорът избра лийд за построяване:\n${companyName}\nСектор: ${sector}`
+    : `↩️ Партньорът премахна избора на лийд (маркировката е свалена):\n${companyName}\nСектор: ${sector}`;
 
   const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',

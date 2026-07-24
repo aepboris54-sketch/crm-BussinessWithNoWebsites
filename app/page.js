@@ -176,13 +176,15 @@ export default function Dashboard() {
       return;
     }
 
-    if (nextValue) {
-      fetch('/api/notify-partner-pick', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyName: lead.company_name, serviceType: lead.service_type }),
-      }).catch((err) => console.error('Error sending partner-pick notification:', err));
-    }
+    fetch('/api/notify-partner-pick', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        companyName: lead.company_name,
+        serviceType: lead.service_type,
+        picked: nextValue,
+      }),
+    }).catch((err) => console.error('Error sending partner-pick notification:', err));
   };
 
   const handleFieldBlur = async (id, field, value) => {
